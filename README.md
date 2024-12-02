@@ -8,8 +8,7 @@ Welcome to **Embark Mobility's Car Rental System**, your simple and convenient s
 ## **Features**  
 - **Browse Cars**: Explore a variety of vehicles for your needs.  
 - **Real-Time Availability**: Check up-to-date car availability and pricing.  
-- **Easy Booking**: Reserve cars online quickly and securely.  
-- **Reservation Management**: Edit or cancel bookings anytime.  
+- **Easy Booking**: Reserve cars online quickly and securely.   
 
 ---
 
