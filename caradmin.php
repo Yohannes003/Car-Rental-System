@@ -90,3 +90,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['operation'])) {
 }
 ?>
 >>>>>>> feature/car-admin-y
+
+
+$query = "SELECT * FROM cars";
+$cars = $con->query($query);
+
+$get_pending_cars = "SELECT * FROM cars WHERE rental_status = 'in_progress'";
+$pending_cars_result = $con->query($get_pending_cars);
+
+
+$car_to_edit = null;
+if (isset($_GET['edit'])) {
+    $car_id = intval($_GET['edit']);
+    $query = "SELECT * FROM cars WHERE id = ?";
+    $stmt = $con->prepare($query);
+    $stmt->bind_param("i", $car_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $car_to_edit = $result->fetch_assoc();
+}
+?>
