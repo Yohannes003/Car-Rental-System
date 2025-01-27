@@ -1,5 +1,6 @@
 <?php
 include("includes/connection.php");
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $car_id = intval($_POST['id']);
     $status = $_POST['status'];
