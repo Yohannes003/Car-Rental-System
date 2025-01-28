@@ -1,32 +1,31 @@
 <?php
-<<<<<<< HEAD
-include("includes/connection.php"); // Include database connection file
+include("includes/connection.php");
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['operation'])) {
     if ($_POST['operation'] === 'add_or_edit') {
-        // Extract and sanitize input data
+
         $car_year = intval($_POST['car_year']);
         $car_name = htmlspecialchars($_POST['car_name']);
         $price_per_day = floatval($_POST['price_per_day']);
         $car_image = $_FILES['car_image']['name'];
         $target_dir = "img/";
         $target_file = $target_dir . basename($car_image);
-        $is_edit = isset($_POST['id']); // Determine if this is an edit operation
+        $is_edit = isset($_POST['id']);
 
         if ($is_edit) {
+
             $car_id = intval($_POST['id']);
             if (!empty($car_image) && move_uploaded_file($_FILES['car_image']['tmp_name'], $target_file)) {
-                // Update car with a new image
+
                 $update_car = "UPDATE cars SET car_year = ?, car_name = ?, price_per_day = ?, car_image = ? WHERE id = ?";
                 $stmt = $con->prepare($update_car);
                 $stmt->bind_param("isisi", $car_year, $car_name, $price_per_day, $car_image, $car_id);
             } else {
-                // Update car without changing the image
+
                 $update_car = "UPDATE cars SET car_year = ?, car_name = ?, price_per_day = ? WHERE id = ?";
                 $stmt = $con->prepare($update_car);
                 $stmt->bind_param("isis", $car_year, $car_name, $price_per_day, $car_id);
             }
-            // Execute update query
             if ($stmt->execute()) {
                 echo "<script>alert('Car updated successfully!'); window.location.href = 'caradmin.php';</script>";
             } else {
@@ -34,7 +33,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['operation'])) {
             }
         } else {
             if (move_uploaded_file($_FILES['car_image']['tmp_name'], $target_file)) {
-                // Insert a new car record
                 $insert_car = "INSERT INTO cars (car_year, car_name, price_per_day, car_image) VALUES (?, ?, ?, ?)";
                 $stmt = $con->prepare($insert_car);
                 $stmt->bind_param("isis", $car_year, $car_name, $price_per_day, $car_image);
@@ -47,12 +45,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['operation'])) {
                 echo "<script>alert('Failed to upload image.');</script>";
             }
         }
-    }
-}
-?>
+    } elseif ($_POST['operation'] === 'approve') {
 
-    elseif ($_POST['operation'] === 'approve') {
-        // Approve car rental
         $car_id = intval($_POST['car_id']);
         $update_status = "UPDATE cars SET rental_status = 'rented' WHERE id = ?";
         $stmt = $con->prepare($update_status);
@@ -64,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['operation'])) {
         }
     }
 } elseif (isset($_GET['delete'])) {
-    // Delete a car record
+
     $car_id = intval($_GET['delete']);
     $query = "SELECT car_image FROM cars WHERE id = ?";
     $stmt = $con->prepare($query);
@@ -76,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['operation'])) {
     if ($car) {
         $image_path = "img/" . $car['car_image'];
         if (file_exists($image_path)) {
-            unlink($image_path); // Remove the image file
+            unlink($image_path);
         }
         $delete_query = "DELETE FROM cars WHERE id = ?";
         $stmt = $con->prepare($delete_query);
@@ -88,9 +82,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['operation'])) {
         }
     }
 }
-?>
-<<<<<<< HEAD
->>>>>>> feature/car-admin-y
 
 
 $query = "SELECT * FROM cars";
@@ -98,8 +89,6 @@ $cars = $con->query($query);
 
 $get_pending_cars = "SELECT * FROM cars WHERE rental_status = 'in_progress'";
 $pending_cars_result = $con->query($get_pending_cars);
-
-
 $car_to_edit = null;
 if (isset($_GET['edit'])) {
     $car_id = intval($_GET['edit']);
@@ -111,16 +100,15 @@ if (isset($_GET['edit'])) {
     $car_to_edit = $result->fetch_assoc();
 }
 ?>
-=======
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Manage Cars</title>
     <style>
-   
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -128,6 +116,7 @@ if (isset($_GET['edit'])) {
             background-color: #f4f4f9;
             color: #333;
         }
+
         .container {
             max-width: 800px;
             margin: 50px auto;
@@ -136,26 +125,33 @@ if (isset($_GET['edit'])) {
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
         }
+
         h1 {
             text-align: center;
             color: #444;
         }
+
         form {
             display: flex;
             flex-direction: column;
             gap: 15px;
         }
+
         label {
             font-size: 1rem;
             font-weight: bold;
         }
-        input[type="text"], input[type="number"], input[type="file"] {
+
+        input[type="text"],
+        input[type="number"],
+        input[type="file"] {
             padding: 10px;
             font-size: 1rem;
             border: 1px solid #ccc;
             border-radius: 5px;
             width: 100%;
         }
+
         button {
             background: #007bff;
             color: #fff;
@@ -165,32 +161,43 @@ if (isset($_GET['edit'])) {
             border-radius: 5px;
             cursor: pointer;
         }
+
         button:hover {
             background: #0056b3;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
         }
-        table, th, td {
+
+        table,
+        th,
+        td {
             border: 1px solid #ddd;
         }
-        th, td {
+
+        th,
+        td {
             padding: 10px;
             text-align: left;
         }
+
         th {
             background-color: #f2f2f2;
         }
+
         a {
             color: #007bff;
             text-decoration: none;
         }
+
         a:hover {
             text-decoration: underline;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
 
@@ -207,7 +214,8 @@ if (isset($_GET['edit'])) {
             <input type="text" id="car_name" name="car_name" value="<?= $car_to_edit['car_name'] ?? '' ?>" required>
 
             <label for="price_per_day">Price Per Day:</label>
-            <input type="text" id="price_per_day" name="price_per_day" value="<?= $car_to_edit['price_per_day'] ?? '' ?>" required>
+            <input type="text" id="price_per_day" name="price_per_day"
+                value="<?= $car_to_edit['price_per_day'] ?? '' ?>" required>
 
             <label for="car_image">Car Image:</label>
             <input type="file" id="car_image" name="car_image" accept="image/*">
@@ -217,7 +225,6 @@ if (isset($_GET['edit'])) {
 
             <button type="submit"><?= $car_to_edit ? 'Update Car' : 'Add Car' ?></button>
         </form>
-
         <h1>View All Cars</h1>
         <table>
             <thead>
@@ -280,5 +287,5 @@ if (isset($_GET['edit'])) {
         <?php endif; ?>
     </div>
 </body>
+
 </html>
->>>>>>> 485b378 (feat: Implement admin panel for car management)
